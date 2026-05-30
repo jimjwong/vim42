@@ -1,0 +1,8 @@
+vim42 NOTICE
+
+The 42 header plugin and header format are credited to:
+
+42Paris/42header
+https://github.com/42Paris/42header
+
+vim42 packages the header into an isolated Vim setup so users can run `vim42` for 42 projects without affecting normal Vim.

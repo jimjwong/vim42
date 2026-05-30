@@ -1,0 +1,50 @@
+" ================================
+" vim42 Configuration
+" ================================
+
+set nocompatible
+
+" ================================
+" 42 Header Identity
+" ================================
+
+let g:user42 = 'yourLogin'
+let g:mail42 = 'yourLogin@student.42.fr'
+
+" Replace yourLogin with your actual 42 login.
+" Example:
+" let g:user42 = 'marvin'
+" let g:mail42 = 'marvin@student.42.fr'
+
+" ================================
+" Load 42 Header Plugin
+" ================================
+
+if filereadable(expand('~/.vim42/plugin/stdheader.vim'))
+	source ~/.vim42/plugin/stdheader.vim
+endif
+
+" ================================
+" Norminette-friendly Tab Settings
+" ================================
+
+set noexpandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+
+" ================================
+" Show Invisible Characters
+" ================================
+
+set list
+set listchars=tab:>-,trail:·
+
+" ================================
+" Useful C Programming Settings
+" ================================
+
+syntax on
+set number
+set autoindent
+set cindent

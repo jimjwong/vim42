@@ -69,7 +69,7 @@ After installation, you will have:
 Clone the repo:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/vim42.git
+git clone https://github.com/jimjwong/vim42.git
 cd vim42
 ```
 
@@ -83,7 +83,7 @@ chmod +x scripts/install.sh
 Example:
 
 ```bash
-./scripts/install.sh marvin marvin@student.42.fr
+./scripts/install.sh jimwong jimwong@student.42singapore.sg
 ```
 
 Refresh your shell:

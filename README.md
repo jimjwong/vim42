@@ -10,66 +10,60 @@ A clean, isolated Vim setup for 42 School projects.
 - local-only 42 username and email configuration
 - no pollution of your normal Vim setup
 
-Use normal Vim for normal work:
+Normal Vim:
 
 ```bash
 vim main.c
 ```
 
-Use `vim42` for 42 projects:
+42 Vim:
 
 ```bash
 vim42 main.c
 ```
 
----
+## What this repo fixes
 
-## Why vim42?
-
-The usual 42 header setup often asks you to place `stdheader.vim` inside:
+The usual 42 header setup places `stdheader.vim` inside:
 
 ```text
 ~/.vim/plugin/
 ```
 
-That means the 42 header plugin loads every time you open normal Vim.
+That means your normal Vim may load the 42 header plugin too.
 
-`vim42` keeps the 42 setup separate:
+`vim42` keeps the setup isolated by installing the plugin into:
 
 ```text
 ~/.vim42/plugin/stdheader.vim
-~/.vimrc_42
 ```
 
-Then it gives you a simple command:
+and launching Vim with:
 
 ```bash
-vim42
+vim -Nu ~/.vimrc_42 --noplugin
 ```
 
-So your normal Vim stays clean.
+This prevents normal Vim plugins from interfering with `vim42`.
 
----
+## Attribution
 
-## Final setup on your machine
-
-After installation, you will have:
+The 42 header functionality and header format are credited to the original 42Paris `42header` project:
 
 ```text
-~/.vimrc                    # your normal Vim config
-~/.vimrc_42                 # 42-only Vim config
-~/.vim42/plugin/stdheader.vim
-~/.zshrc                    # contains alias vim42='vim -u ~/.vimrc_42'
+https://github.com/42Paris/42header
 ```
 
----
+This `vim42` project packages the 42 header into an isolated Vim setup for 42 Piscine / 42 School work.
+
+Full credit for the original 42 header idea and format goes to `42Paris/42header`.
 
 ## Quick Install
 
 Clone the repo:
 
 ```bash
-git clone https://github.com/jimjwong/vim42.git
+git clone https://github.com/YOUR_USERNAME/vim42.git
 cd vim42
 ```
 
@@ -83,7 +77,7 @@ chmod +x scripts/install.sh
 Example:
 
 ```bash
-./scripts/install.sh jimwong jimwong@student.42singapore.sg
+./scripts/install.sh marvin marvin@student.42.fr
 ```
 
 Refresh your shell:
@@ -92,7 +86,7 @@ Refresh your shell:
 source ~/.zshrc
 ```
 
-Now use:
+Use it:
 
 ```bash
 vim42 main.c
@@ -104,210 +98,98 @@ Inside Vim, insert the 42 header with:
 :Stdheader
 ```
 
-or press:
+or press `F1`.
+
+## Important
+
+Run the installer with your real 42 login and email:
+
+```bash
+./scripts/install.sh your42login your42login@student.42.fr
+```
+
+If you skip this or leave `yourLogin`, the header may fall back to the default `marvin@42.fr`.
+
+## What gets installed
+
+The installer creates:
 
 ```text
-F1
+~/.vim42/plugin/stdheader.vim
+~/.vimrc_42
 ```
 
----
-
-## Manual Install
-
-### 1. Create the 42-only plugin folder
+It also adds this alias to `~/.zshrc` or `~/.bashrc`:
 
 ```bash
-mkdir -p ~/.vim42/plugin
+alias vim42='vim -Nu ~/.vimrc_42 --noplugin'
 ```
 
-### 2. Copy the header plugin
+This alias is important because `--noplugin` prevents your normal Vim plugins from loading inside `vim42`.
+
+## Test your setup
+
+Open a fresh test file:
 
 ```bash
-cp plugin/stdheader.vim ~/.vim42/plugin/stdheader.vim
+vim42 test_header.c
 ```
 
-### 3. Create the 42 Vim config
-
-```bash
-cp config/vimrc_42.example ~/.vimrc_42
-```
-
-Edit it:
-
-```bash
-vim ~/.vimrc_42
-```
-
-Change:
+Inside Vim, run:
 
 ```vim
-let g:user42 = 'yourLogin'
-let g:mail42 = 'yourLogin@student.42.fr'
+:Vim42Info
 ```
 
-to your actual 42 login and email.
+You should see your configured login and email.
 
-### 4. Add the `vim42` alias
-
-For macOS zsh:
-
-```bash
-echo "alias vim42='vim -u ~/.vimrc_42'" >> ~/.zshrc
-source ~/.zshrc
-```
-
-For bash:
-
-```bash
-echo "alias vim42='vim -u ~/.vimrc_42'" >> ~/.bashrc
-source ~/.bashrc
-```
-
----
-
-## Usage
-
-Open your file with:
-
-```bash
-vim42 main.c
-```
-
-Insert the header:
+Then run:
 
 ```vim
 :Stdheader
 ```
 
-or press:
-
-```text
-F1
-```
-
----
-
-## Check that vim42 is isolated
-
-Open normal Vim:
-
-```bash
-vim main.c
-```
-
-Inside Vim:
-
-```vim
-:scriptnames
-```
-
-You should **not** see:
-
-```text
-stdheader.vim
-```
-
-Now open Vim42:
-
-```bash
-vim42 main.c
-```
-
-Inside Vim:
-
-```vim
-:scriptnames
-```
-
-You should see something like:
-
-```text
-~/.vim42/plugin/stdheader.vim
-```
-
----
-
-## Check Norminette tab settings
-
-Inside `vim42`, run:
-
-```vim
-:set noexpandtab?
-:set tabstop?
-:set shiftwidth?
-:set softtabstop?
-```
-
-Expected:
-
-```text
-noexpandtab
-tabstop=4
-shiftwidth=4
-softtabstop=4
-```
-
-This means pressing `Tab` creates a real tab character.
-
----
-
-## Seeing tabs and trailing spaces
-
-`vim42` displays invisible characters:
-
-```vim
-set list
-set listchars=tab:>-,trail:·
-```
-
-Tabs appear as:
-
-```text
->---
-```
-
-Trailing spaces appear as:
-
-```text
-·
-```
-
-Example:
+The header should show:
 
 ```c
-int	main(void)
-{
->---write(1, "hello\n", 6);
->---return (0);
-}
+By: your42login <your42login@student.42.fr>
 ```
 
-The `>---` symbol means it is a real tab.
-
----
-
-## Uninstall
+## If the header still shows marvin@42.fr
 
 Run:
 
 ```bash
-chmod +x scripts/uninstall.sh
-./scripts/uninstall.sh
+cat ~/.vimrc_42 | grep -E "user42|mail42|USER|MAIL"
 ```
 
-Then manually remove this line from `~/.zshrc` or `~/.bashrc`:
+You should see your actual login and email, not `yourLogin`.
+
+Also make sure your alias is this:
 
 ```bash
-alias vim42='vim -u ~/.vimrc_42'
+alias vim42='vim -Nu ~/.vimrc_42 --noplugin'
 ```
 
-Reload your shell:
+Check it:
 
 ```bash
-source ~/.zshrc
+alias vim42
 ```
 
----
+Then test with a new file:
+
+```bash
+rm -f test_header.c
+vim42 test_header.c
+```
+
+Inside Vim:
+
+```vim
+:Vim42Info
+:Stdheader
+```
 
 ## Repository structure
 
@@ -315,33 +197,16 @@ source ~/.zshrc
 vim42/
 ├── README.md
 ├── ATTRIBUTION.md
+├── NOTICE
 ├── LICENSE
 ├── .gitignore
 ├── config/
 │   └── vimrc_42.example
 ├── plugin/
 │   └── stdheader.vim
-└── scripts/
-    ├── install.sh
-    └── uninstall.sh
+├── scripts/
+│   ├── install.sh
+│   └── uninstall.sh
+└── docs/
+    └── troubleshooting.md
 ```
-
----
-
-## Attribution
-
-The 42 header functionality and original `stdheader.vim` plugin are provided by the original 42Paris `42header` project:
-
-```text
-https://github.com/42Paris/42header
-```
-
-This `vim42` project packages that header plugin into an isolated Vim setup for 42 projects.
-
-The main improvement is isolation:
-
-- the 42 header plugin loads only in `vim42`
-- 42 identity is stored in `~/.vimrc_42`
-- normal Vim remains untouched
-
-Full credit for the 42 header plugin goes to the original `42Paris/42header` project.

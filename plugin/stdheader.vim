@@ -1,206 +1,184 @@
+" **************************************************************************** "
+"                                                                              "
+"                                                         :::      ::::::::    "
+"    stdheader.vim                                      :+:      :+:    :+:    "
+"                                                     +:+ +:+         +:+      "
+"    By: vim42                                     +#+  +:+       +#+         "
+"                                                 +#+#+#+#+#+   +#+            "
+"    Created: 2026/05/30 00:00:00 by vim42             #+#    #+#              "
+"    Updated: 2026/05/30 00:00:00 by vim42            ###   ########.fr        "
+"                                                                              "
+" **************************************************************************** "
+"
+" Attribution:
+" The 42 header functionality and header format are credited to:
+" https://github.com/42Paris/42header
+"
+" vim42 packages the header into an isolated Vim setup.
+"
+
+if exists('g:loaded_vim42_stdheader')
+	finish
+endif
+let g:loaded_vim42_stdheader = 1
+
+let s:length = 80
+let s:margin = 5
+let s:start = '/*'
+let s:end = '*/'
+let s:fill = '*'
+
 let s:asciiart = [
-			\"        :::      ::::::::",
-			\"      :+:      :+:    :+:",
-			\"    +:+ +:+         +:+  ",
-			\"  +#+  +:+       +#+     ",
-			\"+#+#+#+#+#+   +#+        ",
-			\"     #+#    #+#          ",
-			\"    ###   ########.fr    "
-			\]
+			\ '       :::      ::::::::',
+			\ '     :+:      :+:    :+:',
+			\ '   +:+ +:+         +:+  ',
+			\ ' +#+  +:+       +#+     ',
+			\ '+#+ +#+#+#+#+#+   +#+        ',
+			\ '     #+#    #+#          ',
+			\ '    ###   ########.fr    '
+			\ ]
 
-let s:start		= '/*'
-let s:end		= '*/'
-let s:fill		= '*'
-let s:length	= 80
-let s:margin	= 5
+let s:types = {
+			\ '\.c$\|\.h$\|\.cc$\|\.hh$\|\.cpp$\|\.hpp$\|\.tpp$\|\.ipp$\|\.cxx$\|\.go$\|\.rs$\|\.php$\|\.py$\|\.java$\|\.kt$\|\.kts$': ['/*', '*/', '*'],
+			\ '\.htm$\|\.html$\|\.xml$': ['<!--', '-->', '*'],
+			\ '\.js$\|\.ts$': ['//', '//', '*'],
+			\ '\.tex$': ['%', '%', '*'],
+			\ '\.ml$\|\.mli$\|\.mll$\|\.mly$': ['(*', '*)', '*'],
+			\ '\.vim$\|vimrc$': ['"', '"', '*'],
+			\ '\.el$\|\.emacs$\|\.asm$': [';', ';', '*'],
+			\ '\.f90$\|\.f95$\|\.f03$\|\.f$\|\.for$': ['!', '!', '/'],
+			\ '\.lua$': ['--', '--', '-'],
+			\ '\.sh$\|\.bash$\|\.zsh$': ['#', '#', '*']
+			\ }
 
-let s:types		= {
-			\'\.c$\|\.h$\|\.cc$\|\.hh$\|\.cpp$\|\.hpp$\|\.tpp$\|\.ipp$\|\.cxx$\|\.go$\|\.rs$\|\.php$\|\.java$\|\.kt$\|\.kts$\|\.css$\|\.scss$':
-			\['/*', '*/', '*'],
-			\'\.htm$\|\.html$\|\.xml$':
-			\['<!--', '-->', '*'],
-			\'\.js$\|\.ts$':
-			\['//', '//', '*'],
-			\'\.tex$':
-			\['%', '%', '*'],
-			\'\.ml$\|\.mli$\|\.mll$\|\.mly$':
-			\['(*', '*)', '*'],
-			\'\.vim$\|\vimrc$':
-			\['"', '"', '*'],
-			\'\.el$\|\emacs$\|\.asm$\|\.s$':
-			\[';', ';', '*'],
-			\'\.f90$\|\.f95$\|\.f03$\|\.f$\|\.for$':
-			\['!', '!', '/'],
-			\'\.lua$':
-			\['--', '--', '-'],
-			\'\.py$':
-			\['#', '#', '*']
-			\}
-
-function! s:filetype()
+function! s:filetype() abort
 	let l:f = s:filename()
+	let s:start = '#'
+	let s:end = '#'
+	let s:fill = '*'
 
-	let s:start	= '#'
-	let s:end	= '#'
-	let s:fill	= '*'
-
-	for type in keys(s:types)
-		if l:f =~ type
-			let s:start	= s:types[type][0]
-			let s:end	= s:types[type][1]
-			let s:fill	= s:types[type][2]
+	for l:type in keys(s:types)
+		if l:f =~ l:type
+			let s:start = s:types[l:type][0]
+			let s:end = s:types[l:type][1]
+			let s:fill = s:types[l:type][2]
 		endif
 	endfor
-
 endfunction
 
-function! s:ascii(n)
-	return s:asciiart[a:n - 3]
-endfunction
-
-function! s:textline(left, right)
-	let l:left = strpart(a:left, 0, s:length - s:margin * 2 - strlen(a:right))
-
-	let l:spaces = s:length - s:margin * 2 - strlen(l:left) - strlen(a:right)
-	if l:spaces < 0
-		let l:spaces = 0
-	endif
-
-	return s:start . repeat(' ', s:margin - strlen(s:start)) . l:left . repeat(' ', l:spaces) . a:right . repeat(' ', s:margin - strlen(s:end)) . s:end
-endfunction
-
-function! s:line(n)
-	if a:n == 1 || a:n == 11 " top and bottom line
-		return s:start . ' ' . repeat(s:fill, s:length - strlen(s:start) - strlen(s:end) - 2) . ' ' . s:end
-	elseif a:n == 2 || a:n == 10 " blank line
-		return s:textline('', '')
-	elseif a:n == 3 || a:n == 5 || a:n == 7 " empty with ascii
-		return s:textline('', s:ascii(a:n))
-	elseif a:n == 4 " filename
-		return s:textline(s:filename(), s:ascii(a:n))
-	elseif a:n == 6 " author
-		let l:author = "By: " . s:user() . " <" . s:mail() . ">"
-		let l:available = s:length - s:margin * 2 - strlen(s:ascii(a:n))
-		if strlen(l:author) > l:available
-			let l:author = "By: " . s:mail()
-		endif
-		return s:textline(l:author, s:ascii(a:n))
-	elseif a:n == 8 " created
-		return s:textline("Created: " . s:date() . " by " . s:user(), s:ascii(a:n))
-	elseif a:n == 9 " updated
-		return s:textline("Updated: " . s:date() . " by " . s:user(), s:ascii(a:n))
-	endif
-endfunction
-
-function! s:user()
-	if exists('g:user42')
+function! s:user() abort
+	if exists('g:user42') && strlen(g:user42) > 0 && g:user42 !=# 'yourLogin'
 		return g:user42
 	endif
-	let l:user = $USER
-	if strlen(l:user) == 0
-		let l:user = "marvin"
+
+	if strlen($USER) > 0 && $USER !=# 'yourLogin'
+		return $USER
 	endif
-	return l:user
+
+	return 'marvin'
 endfunction
 
-function! s:mail()
-	if exists('g:mail42')
+function! s:mail() abort
+	if exists('g:mail42') && strlen(g:mail42) > 0 && g:mail42 !=# 'yourLogin@student.42.fr'
 		return g:mail42
 	endif
-	let l:mail = $MAIL
-	if strlen(l:mail) == 0
-		let l:mail = "marvin@42.fr"
+
+	if strlen($MAIL) > 0 && $MAIL !=# 'yourLogin@student.42.fr'
+		return $MAIL
 	endif
-	return l:mail
+
+	return 'marvin@42.fr'
 endfunction
 
-function! s:filename()
-	let l:filename = expand("%:t")
+function! s:filename() abort
+	let l:filename = expand('%:t')
 	if strlen(l:filename) == 0
-		let l:filename = "< new >"
+		return '< new >'
 	endif
 	return l:filename
 endfunction
 
-function! s:date()
-	return strftime("%Y/%m/%d %H:%M:%S")
+function! s:date() abort
+	return strftime('%Y/%m/%d %H:%M:%S')
 endfunction
 
-function! s:insert()
+function! s:ascii(n) abort
+	return s:asciiart[a:n - 3]
+endfunction
+
+function! s:textline(left, right) abort
+	let l:left = strpart(a:left, 0, s:length - s:margin * 2 - strlen(a:right))
+	return s:start
+				\ . repeat(' ', s:margin - strlen(s:start))
+				\ . l:left
+				\ . repeat(' ', s:length - s:margin * 2 - strlen(l:left) - strlen(a:right))
+				\ . a:right
+				\ . repeat(' ', s:margin - strlen(s:end))
+				\ . s:end
+endfunction
+
+function! s:line(n) abort
+	if a:n == 1 || a:n == 11
+		return s:start . ' ' . repeat(s:fill, s:length - strlen(s:start) - strlen(s:end) - 2) . ' ' . s:end
+	elseif a:n == 2 || a:n == 10
+		return s:textline('', '')
+	elseif a:n == 3 || a:n == 5 || a:n == 7
+		return s:textline('', s:ascii(a:n))
+	elseif a:n == 4
+		return s:textline(s:filename(), s:ascii(a:n))
+	elseif a:n == 6
+		return s:textline('By: ' . s:user() . ' <' . s:mail() . '>', s:ascii(a:n))
+	elseif a:n == 8
+		return s:textline('Created: ' . s:date() . ' by ' . s:user(), s:ascii(a:n))
+	elseif a:n == 9
+		return s:textline('Updated: ' . s:date() . ' by ' . s:user(), s:ascii(a:n))
+	endif
+	return ''
+endfunction
+
+function! s:insert() abort
 	let l:line = 11
+	call append(0, '')
 
-	" empty line after header
-	call append(0, "")
-
-	" loop over lines
 	while l:line > 0
 		call append(0, s:line(l:line))
 		let l:line = l:line - 1
 	endwhile
 endfunction
 
-function! s:update()
+function! s:update() abort
 	call s:filetype()
-	if getline(9) =~ s:start . repeat(' ', s:margin - strlen(s:start)) . "Updated: "
-		if &mod
-			if s:not_rebasing()
-				call setline(9, s:line(9))
-			endif
+
+	if getline(9) =~ 'Updated: '
+		if &modified
+			call setline(9, s:line(9))
 		endif
-		if s:not_rebasing()
-			call setline(4, s:line(4))
-		endif
+		call setline(4, s:line(4))
 		return 0
 	endif
+
 	return 1
 endfunction
 
-function! s:stdheader()
+function! s:stdheader() abort
+	call s:filetype()
+
 	if s:update()
 		call s:insert()
 	endif
 endfunction
 
-function! s:fix_merge_conflict()
-	call s:filetype()
-	let l:checkline = s:start . repeat(' ', s:margin - strlen(s:start)) . "Updated: "
-
-	" fix conflict on 'Updated:' line
-	if getline(9) =~ "<<<<<<<" && getline(11) =~ "=======" && getline(13) =~ ">>>>>>>" && getline(10) =~ l:checkline
-		let l:line = 9
-		while l:line < 12
-			call setline(l:line, s:line(l:line))
-			let l:line = l:line + 1
-		endwhile
-		echo "42header conflicts automatically resolved!"
-	exe ":12,15d"
-
-	" fix conflict on both 'Created:' and 'Updated:' (unlikely, but useful in case)
-	elseif getline(8) =~ "<<<<<<<" && getline(11) =~ "=======" && getline(14) =~ ">>>>>>>" && getline(10) =~ l:checkline
-		let l:line = 8
-		while l:line < 12
-			call setline(l:line, s:line(l:line))
-			let l:line = l:line + 1
-		endwhile
-		echo "42header conflicts automatically resolved!"
-	exe ":12,16d"
-	endif
+function! s:vim42info() abort
+	echo 'vim42 user: ' . s:user()
+	echo 'vim42 mail: ' . s:mail()
+	echo 'g:user42: ' . (exists('g:user42') ? g:user42 : '<not set>')
+	echo 'g:mail42: ' . (exists('g:mail42') ? g:mail42 : '<not set>')
+	echo '$USER: ' . $USER
+	echo '$MAIL: ' . $MAIL
 endfunction
 
-function! s:not_rebasing()
-	if system("ls `git rev-parse --git-dir 2>/dev/null` | grep rebase | wc -l")
-		return 0
-	endif
-	return 1
-endfunction
+command! Stdheader call s:stdheader()
+command! Vim42Info call s:vim42info()
 
-" Bind command and shortcut
-
-command! Stdheader call s:stdheader ()
-map <F1> :Stdheader<CR>
-
-augroup stdheader
-	autocmd!
-	autocmd BufWritePre * call s:update ()
-	autocmd BufReadPost * call s:fix_merge_conflict ()
-augroup END
+nnoremap <silent> <F1> :Stdheader<CR>
+autocmd BufWritePre * call s:update()

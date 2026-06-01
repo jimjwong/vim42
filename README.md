@@ -56,8 +56,6 @@ https://github.com/42Paris/42header
 
 This `vim42` project packages the 42 header into an isolated Vim setup for 42 Piscine / 42 School work.
 
-Full credit for the original 42 header idea and format goes to `42Paris/42header`.
-
 ## Quick Install
 
 Clone the repo:

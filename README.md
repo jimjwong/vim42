@@ -22,6 +22,19 @@ vim main.c
 vim42 main.c
 ```
 
+## Preview
+
+This is how vim42 looks when used with the 42 header and visible tab settings:
+
+![vim42 sample look](images/vim42_sample_look.png)
+
+The sample shows:
+
+- the 42-style file header
+- visible tab indicators
+- line numbers
+- a Vim setup suited for 42 Piscine / 42 School C projects
+
 ## What this repo fixes
 
 The usual 42 header setup places `stdheader.vim` inside:

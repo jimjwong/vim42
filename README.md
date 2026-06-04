@@ -74,7 +74,7 @@ This `vim42` project packages the 42 header into an isolated Vim setup for 42 Pi
 Clone the repo:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/vim42.git
+git clone https://github.com/jimjwong/vim42.git
 cd vim42
 ```
 
